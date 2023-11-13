@@ -4,13 +4,13 @@ const bodyParser = require('body-parser');
 
 listEdit.use(bodyParser.json()); 
 
-//middleware para manejar los errores de solicitud POST y PUT
+
 listEdit.use((req, res, next) => {
   if (req.method === "POST" || req.method === "PUT") {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: "Cuerpo de solicitud vacío" });
     } else {
-      // Verifica que el cuerpo de la solicitud contenga la información requerida
+      
       const requiredAttributes = ["description", "completado"]; 
       for (const attr of requiredAttributes) {
         if (!(attr in req.body)) {
