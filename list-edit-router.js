@@ -1,8 +1,20 @@
 const express= require(`express`);
 const listEdit= express.Router();
 const bodyParser = require('body-parser');
+const listaTareas= require("./data");
 
 listEdit.use(bodyParser.json()); 
+
+const authorize = (allowedRoles) => {
+  return (req, res, next) => {
+    if (allowedRoles.includes(req.role)) {
+      next();
+    } else {
+      res.status(403).json({ error: "Access not allowed" });
+    }
+  };
+};
+
 
 //middleware para manejar los errores de solicitud POST y PUT
 listEdit.use((req, res, next) => {
@@ -27,9 +39,12 @@ listEdit.use((req, res, next) => {
 
 
 
-    listEdit.post(`/agregar`,(req,res)=>{
-      const {listaTareas}= require('./practica');
+    listEdit.post(`/agregar`,authorize(["admin", "user"]),(req,res)=>{
+    
+     
+      
         const agregaTarea = req.body;
+        
             const nuevaTarea= {
             id:listaTareas.length + 1,
             descripcion :agregaTarea.descripcion,
@@ -39,8 +54,9 @@ listEdit.use((req, res, next) => {
         res.status(201).json('Tarea agregada'); 
         })
     
-    listEdit.delete(`/borrar/:id`,(req,res)=>{
-    const {listaTareas}= require('./practica');
+    listEdit.delete(`/borrar/:id`,authorize(["admin"]),(req,res)=>{
+    
+    
     const id = parseInt(req.params.id);
     const index = listaTareas.findIndex((tarea) => tarea.id === id);
      if (index !== -1) {
@@ -53,10 +69,11 @@ listEdit.use((req, res, next) => {
     })
 
     
-    listEdit.put(`/actualizar/:id`,(req,res)=>{
-      const {listaTareas}= require('./practica');
+    listEdit.put(`/actualizar/:id`,authorize(["admin"]),(req,res)=>{
     
-      const id = parseInt(req.params.id);
+      
+    
+    const id = parseInt(req.params.id);
     
     const tarea= listaTareas.find((tarea)=> tarea.id === id);
      if (tarea) {
