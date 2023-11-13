@@ -4,18 +4,31 @@ const bodyParser = require('body-parser');
 
 listEdit.use(bodyParser.json()); 
 
+//middleware para manejar los errores de solicitud POST y PUT
+listEdit.use((req, res, next) => {
+  if (req.method === "POST" || req.method === "PUT") {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ error: "Cuerpo de solicitud vacío" });
+    } else {
+      // Verifica que el cuerpo de la solicitud contenga la información requerida
+      const requiredAttributes = ["description", "completado"]; 
+      for (const attr of requiredAttributes) {
+        if (!(attr in req.body)) {
+          return res.status(400).json({ error: "Falta el atributo: ${attr}" });
+        }
+        
+      }
+    }
+  }
+  next();
+});
 
 
-const listaTareas = [  
-    {id :1, descripcion: "barrer", completado: false},
-    {id:2, descripcion: "trapear", completado: true},
-    {id:3, descripcion: "lavar ropa", completado: false},
-    {id:4, descripcion: "lavar el carro", completado: true},
-    {id:5, descripcion:"hacer de comer", completado: false},
-  ];
-  
+
+
 
     listEdit.post(`/agregar`,(req,res)=>{
+      const {listaTareas}= require('./practica');
         const agregaTarea = req.body;
             const nuevaTarea= {
             id:listaTareas.length + 1,
@@ -27,6 +40,7 @@ const listaTareas = [
         })
     
     listEdit.delete(`/borrar/:id`,(req,res)=>{
+    const {listaTareas}= require('./practica');
     const id = parseInt(req.params.id);
     const index = listaTareas.findIndex((tarea) => tarea.id === id);
      if (index !== -1) {
@@ -40,8 +54,9 @@ const listaTareas = [
 
     
     listEdit.put(`/actualizar/:id`,(req,res)=>{
+      const {listaTareas}= require('./practica');
     
-    const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id);
     
     const tarea= listaTareas.find((tarea)=> tarea.id === id);
      if (tarea) {
