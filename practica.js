@@ -5,10 +5,16 @@ const app = express();
 const PORT= 3000;
 const dotenv = require ("dotenv");
 const jwt = require ("jsonwebtoken");
-const listaTareas = require("./data");
+const listaTareas = require("./datos");
 
 dotenv.config();
 const secret = process.env.secret_key;
+
+const users = [
+  { username: 'admin', email: 'admin@example.com', role: 'admin', password: 'admin_password' },
+  { username: 'user', email: 'user@example.com', role: 'user', password: 'user_password' }
+];
+
 
   const authorize = (allowedRoles) => {
    return (req, res, next) => {
@@ -80,10 +86,9 @@ const secret = process.env.secret_key;
 
     
          
-  app.listen(PORT, ()=>{
-  console.log(`El servidor esta corriendo en : https://localohst:3000/`)
-    })
-
+ app.listen(PORT, () => {
+  console.log("El servidor está corriendo en: http://localhost:${PORT}/");
+});
     
  module.exports= {listaTareas};
   
